@@ -1,0 +1,7 @@
+module Workarea
+  decorate Payment::StoreCreditCard, with: :design_toscano do
+    def perform!
+      return true
+    end
+  end
+end
