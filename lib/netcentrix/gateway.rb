@@ -7,6 +7,7 @@ module ActiveMerchant
 
 
       def authorize(money, credit_card, options = {})
+      	byebug
         billing_address = options[:billing_address] || options[:address]
 
         post = {}
@@ -31,6 +32,7 @@ module ActiveMerchant
         add_line_items(post, options)
         add_test_mode(post, options)
         add_save_card(post, options)
+      	byebug
         commit(:authorization, post)
       end
 

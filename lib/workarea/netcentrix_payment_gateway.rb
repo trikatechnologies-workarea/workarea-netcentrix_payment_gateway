@@ -28,6 +28,7 @@ module Workarea
         if Rails.env.test?
           self.gateway = ActiveMerchant::Billing::BogusGateway.new
         else
+          byebug
           self.gateway = ActiveMerchant::Billing::NetcentrixPaymentGateway.new credentials
         end
       else
