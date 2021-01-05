@@ -1,4 +1,6 @@
+require 'workarea'
 require "workarea/netcentrix_payment_gateway/engine"
+require "workarea/netcentrix_payment_gateway/version"
 require 'netcentrix/gateway'
 
 module Workarea
@@ -24,12 +26,12 @@ module Workarea
     def self.auto_initialize_gateway
       if credentials.present?
         if Rails.env.test?
-          self.gateway = ActiveMerchant::Billing::BogusCreditCardGateway.new
+          self.gateway = ActiveMerchant::Billing::BogusGateway.new
         else
           self.gateway = ActiveMerchant::Billing::NetcentrixPaymentGateway.new credentials
         end
       else
-        self.gateway = ActiveMerchant::Billing::BogusCreditCardGateway.new
+        self.gateway = ActiveMerchant::Billing::BogusGateway.new
       end
     end
   end
