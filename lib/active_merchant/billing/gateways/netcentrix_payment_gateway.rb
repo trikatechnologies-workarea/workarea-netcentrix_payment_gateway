@@ -19,6 +19,9 @@ module ActiveMerchant
 
       def order_info(money, paysource)
         current_order = Workarea::Order.find_current
+        #Changed the format of workarea credit card months from 1..9 to netcentrix needed/acceptance of 01..09 and 11, 12 will be as it is. 
+        credit_card_month = format('%02d', paysource.month)
+
         order = {
           "OrderNumber" => "#{current_order.id}",
           "PaymentType" => 'Credit Card',
@@ -26,7 +29,7 @@ module ActiveMerchant
           "CardNumber" => "#{paysource.number}",
           "Token" => '',
           "CardType" => "VI",
-          "CardExpMonth" => "01",
+          "CardExpMonth" => "#{credit_card_month}",
           "CardExpYear" => "#{paysource.year}",
           "CardCID" => "#{paysource.verification_value}"
         }
