@@ -44,8 +44,8 @@ module ActiveMerchant
 
       def payment_authentication
         {
-          "merchant" => "#{Rails.application.secrets.netcentrix_payment_merchant rescue nil}" ,
-          "password" => "#{Rails.application.secrets.netcentrix_payment_password rescue nil}" 
+          "merchant" => "#{Workarea.config.netcentrix_payment_merchant rescue nil}" ,
+          "password" => "#{Workarea.config.netcentrix_payment_password rescue nil}" 
         }
       end
 
@@ -68,7 +68,7 @@ module ActiveMerchant
       # API call to push payment related information to the ecometry via netcentrix APIs. In order to successfully hit the API please pass payment related information in the method argument which is in Hash structure.
       def payment_api(order, money)
         body = payment_body(order)
-        endpoint = Rails.application.secrets.netcentrix_api rescue nil
+        endpoint = Workarea.config.netcentrix_api rescue nil
         response = HTTParty.post(endpoint, :headers => headers, :body => body)
         hsh = Hash.from_xml(response.parsed_response)
 

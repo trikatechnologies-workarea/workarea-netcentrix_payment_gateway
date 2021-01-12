@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    workarea-netcentrix_payment_gateway (0.1.0)
+    workarea-netcentrix_payment_gateway (0.1.1)
       workarea (~> 3.x)
 
 GEM
