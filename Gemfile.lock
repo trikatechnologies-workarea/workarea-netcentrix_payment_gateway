@@ -90,7 +90,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     colorize (0.8.1)
-    concurrent-ruby (1.1.7)
+    concurrent-ruby (1.1.8)
     connection_pool (2.2.3)
     countries (2.1.4)
       i18n_data (~> 0.8.0)
@@ -134,7 +134,7 @@ GEM
       addressable (~> 2.3, >= 2.3.5)
     featurejs_rails (1.0.1.1)
     ffi (1.9.25)
-    fog-aws (3.7.0)
+    fog-aws (3.8.0)
       fog-core (~> 2.1)
       fog-json (~> 1.1)
       fog-xml (~> 0.1)

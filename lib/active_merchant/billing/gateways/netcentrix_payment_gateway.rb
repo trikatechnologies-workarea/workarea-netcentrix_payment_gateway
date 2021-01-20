@@ -21,20 +21,22 @@ module ActiveMerchant
         current_order = Workarea::Order.find_current
         #Changed the format of workarea credit card months from 1..9 to netcentrix needed/acceptance of 01..09 and 11, 12 will be as it is. 
         credit_card_month = format('%02d', paysource.month)
-
+        #Mapping the payment type name from workarea(Ex. visa) to netcentrix needed(Ex. VI)  
+        card_type = mapping_payment_type(paysource.brand)
         order = {
           "OrderNumber" => "#{current_order.id}",
           "PaymentType" => 'Credit Card',
           "PaymentAmount" => "#{money.to_f/100}",
           "CardNumber" => "#{paysource.number}",
           "Token" => '',
-          "CardType" => "VI",
+          "CardType" => "#{card_type.first}",
           "CardExpMonth" => "#{credit_card_month}",
           "CardExpYear" => "#{paysource.year}",
           "CardCID" => "#{paysource.verification_value}"
         }
         return order
       end
+
 
       def headers
         {
@@ -94,6 +96,15 @@ module ActiveMerchant
 
       def authorization_from(response)
         response.object_id.to_s
+      end
+
+      def mapping_payment_type(brand)
+        credit_card_type = [["visa", "VI"], ["master", "MC"], ["discover", "DI"], ["american_express", "AX"]]
+        credit_card_type.map do |payment_brand|
+          if payment_brand.include? brand
+            payment_brand&.last
+          end
+        end
       end
     end
   end
