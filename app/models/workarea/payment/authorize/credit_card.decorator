@@ -11,7 +11,7 @@ module Workarea
         gateway.authorize(
           transaction.amount.cents,
           tender.to_token_or_active_merchant,
-          transaction_options
+          tender.payment.id
         )
       end
     end

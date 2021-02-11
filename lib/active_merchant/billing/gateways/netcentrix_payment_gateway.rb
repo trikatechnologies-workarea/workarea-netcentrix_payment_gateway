@@ -9,7 +9,7 @@ module ActiveMerchant
       SUCCESS_MESSAGE = "Netcentrix Gateway: Payment is successfully processed."
      
       def authorize(money, paysource, options = {})
-        payment_info = order_info(money, paysource)
+        payment_info = order_info(money, paysource, options)
         payment_api(payment_info, money)
       end
 
@@ -17,14 +17,13 @@ module ActiveMerchant
         Response.new(true, SUCCESS_MESSAGE, { authorization: paysource }, test: true)
       end
 
-      def order_info(money, paysource)
-        current_order = Workarea::Order.find_current
+      def order_info(money, paysource, order_id)
         #Changed the format of workarea credit card months from 1..9 to netcentrix needed/acceptance of 01..09 and 11, 12 will be as it is. 
         credit_card_month = format('%02d', paysource.month)
         #Mapping the payment type name from workarea(Ex. visa) to netcentrix needed(Ex. VI)  
         card_type = mapping_payment_type(paysource.brand)
         order = {
-          "OrderNumber" => "#{current_order.id}",
+          "OrderNumber" => "#{order_id}",
           "PaymentType" => 'Credit Card',
           "PaymentAmount" => "#{money.to_f/100}",
           "CardNumber" => "#{paysource.number}",
