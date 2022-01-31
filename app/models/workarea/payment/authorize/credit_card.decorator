@@ -8,12 +8,12 @@ module Workarea
       return unless Workarea::Payment::StoreCreditCard.new(tender, options).save!
 
       transaction.response = handle_active_merchant_errors do
-        ord = Workarea::Order.find(tender.payment.id)
-        ord.order_num
+        ord = Workarea::Order.find(tender.payment.id) rescue nil
+        ord&.order_num
         gateway.authorize(
           transaction.amount.cents,
           tender.to_token_or_active_merchant,
-          ord.generated_order
+          ord&.generated_order
         )
       end
     end
