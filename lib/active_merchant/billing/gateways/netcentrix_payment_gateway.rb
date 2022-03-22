@@ -69,10 +69,12 @@ module ActiveMerchant
       # API call to push payment related information to the ecometry via netcentrix APIs. In order to successfully hit the API please pass payment related information in the method argument which is in Hash structure.
       def payment_api(order, money)
         body = payment_body(order)
+        ord = Workarea::Order.find_by(generated_order: order["OrderNumber"])
+        
         endpoint = Workarea.config.netcentrix_api rescue nil
         response = HTTParty.post(endpoint, :headers => headers, :body => body)
         hsh = Hash.from_xml(response.parsed_response)
-
+        ord.update_attributes(response_from_payment_api: response.parsed_response )
         if hsh['Pushpayment']['Success'] == 'Y'
           puts "Payment is successfully processed."
           Response.new(
@@ -82,8 +84,10 @@ module ActiveMerchant
             authorization: authorization_from(response),
           )
         else
-          response = false
+          ord.update_attributes(push_to_payment_api_failed: true )
+          Workarea::Storefront::PaymentMailer.notify(response.parsed_response, ord).deliver_later
           puts "Bad Request please validate information."
+          response = false 
         end
       end
 
