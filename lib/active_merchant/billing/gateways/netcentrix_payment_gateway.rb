@@ -7,6 +7,8 @@ module ActiveMerchant
       attr_reader :options
 
       SUCCESS_MESSAGE = "Netcentrix Gateway: Payment is successfully processed."
+      FAILURE_MESSAGE ="Card declined. Please re-enter your payment details."
+      NO_OF_TRY_OVER ='The payment has declined and Customer Service will give a call'
      
       def authorize(money, paysource, options = {})
         payment_info = order_info(money, paysource, options)
@@ -70,19 +72,26 @@ module ActiveMerchant
       def payment_api(order, money)
         body = payment_body(order)
         ord = Workarea::Order.find_by(generated_order: order["OrderNumber"])
-        
         endpoint = Workarea.config.netcentrix_api rescue nil
         response = HTTParty.post(endpoint, :headers => headers, :body => body)
-        hsh = Hash.from_xml(response.parsed_response)
-        ord.update_attributes(response_from_payment_api: response.parsed_response )
-        if hsh['Pushpayment']['Success'] == 'Y'
+        hsh = Hash.from_xml(response)
+        ord.update_attributes(response_from_payment_api: response)
+        if  hsh['Pushpayment']["CCAuth"] == "Approved"
           puts "Payment is successfully processed."
+          ord.update_attributes("payment_error", nil)
           Response.new(
             success_from(response),
             SUCCESS_MESSAGE,
             {authorized_amount: money},
             authorization: authorization_from(response),
           )
+
+        elsif   hsh['Pushpayment']["CCAuth"] == "Declined" && ord.payment_retry < 2
+          ord.update_attributes(payment_retry: ord.payment_retry + 1, payment_error: FAILURE_MESSAGE)
+          Response.new(false, FAILURE_MESSAGE, {},authorization: authorization_from(response))
+        elsif hsh['Pushpayment']['Success'] == 'Y' && hsh['Pushpayment']["CCAuth"] == "Declined"
+          ord.update_attributes(payment_error: NO_OF_TRY_OVER)
+          Response.new(true, NO_OF_TRY_OVER, {}, authorization: authorization_from(response))
         else
           ord.update_attributes(push_to_payment_api_failed: true )
           Workarea::Storefront::PaymentMailer.notify(response.parsed_response, ord).deliver_later
