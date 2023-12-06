@@ -73,8 +73,7 @@ module ActiveMerchant
         body = payment_body(order)
         ord = Workarea::Order.find_by(generated_order: order["OrderNumber"])
         endpoint = Workarea.config.netcentrix_api rescue nil
-        #response = HTTParty.post(endpoint, :headers => headers, :body => body)
-        response = error_response
+        response = HTTParty.post(endpoint, :headers => headers, :body => body)
         hsh = Hash.from_xml(response)
         ord.update_attributes(response_from_payment_api: response)
         if  hsh['Pushpayment']["CCAuth"] == "Approved"
@@ -104,8 +103,7 @@ module ActiveMerchant
       private
 
       def success_from(response)
-        true
-        # response.code == 200
+        response.code == 200
       end
 
       def authorization_from(response)
@@ -119,28 +117,6 @@ module ActiveMerchant
             payment_brand&.last
           end
         end
-      end
-
-      def success_response
-      source = '<Pushpayment> 
-            <Success>Y</Success>
-            <ErrorMessage></ErrorMessage>
-            <CCAuth>Approved</CCAuth>
-          </Pushpayment>'
-
-          doc = Nokogiri::XML source
-          doc.to_xml
-      end
-
-      def error_response
-        source = '<Pushpayment> 
-            <Success>Y</Success>
-            <ErrorMessage></ErrorMessage>
-            <CCAuth>Declined</CCAuth>
-          </Pushpayment>'
-
-          doc = Nokogiri::XML source
-          doc.to_xml  
       end
     end
   end
