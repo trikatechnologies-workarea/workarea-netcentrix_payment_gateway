@@ -35,7 +35,7 @@ module ActiveMerchant
           "CardExpYear" => "#{paysource.year}",
           "CardCID" => "#{paysource.verification_value}"
         }
-        order.merge('FirstName' => 'Website', 'LastName' => 'Ecomtest') if Rails.env == "staging"
+        order.merge('FirstName' => 'Website', 'LastName' => 'Ecomtest')
         return order
       end
 
