@@ -74,6 +74,7 @@ module ActiveMerchant
         body = payment_body(order)
         ord = Workarea::Order.find_by(generated_order: order["OrderNumber"])
         endpoint = Workarea.config.netcentrix_api rescue nil
+        ord.update_attributes(payment_request_body: body)
         response = HTTParty.post(endpoint, :headers => headers, :body => body)
         hsh = Hash.from_xml(response)
         ord.update_attributes(response_from_payment_api: response)
