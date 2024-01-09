@@ -23,6 +23,9 @@ module ActiveMerchant
         #Changed the format of workarea credit card months from 1..9 to netcentrix needed/acceptance of 01..09 and 11, 12 will be as it is. 
         credit_card_month = format('%02d', paysource.month)
         #Mapping the payment type name from workarea(Ex. visa) to netcentrix needed(Ex. VI)  
+        workarea_order_id = Workarea::Order.find_by(generated_order: order_id).try(:id)
+        payment = Workarea::Payment.find_by(id: workarea_order_id)
+        billing_address = payment.address
         card_type = mapping_payment_type(paysource.brand).compact
         order = {
           "OrderNumber" => "#{order_id}",
@@ -35,7 +38,10 @@ module ActiveMerchant
           "CardExpYear" => "#{paysource.year}",
           "CardCID" => "#{paysource.verification_value}"
         }
-        order.merge!('FirstName' => 'Website', 'LastName' => 'Ecomtest')
+        order.merge!('FirstName' => 'Website', 'LastName' => 'Ecomtest',
+                     'Street' => billing_address.street, 'City' => billing_address.city,
+                     'State' => billing_address.region, 'Zip' =>  billing_address.postal_code,
+                     'Country' => billing_address.country.alpha2)
         return order
       end
 
