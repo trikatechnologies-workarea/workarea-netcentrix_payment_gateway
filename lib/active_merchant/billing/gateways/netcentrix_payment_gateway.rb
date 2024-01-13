@@ -86,7 +86,7 @@ module ActiveMerchant
         ord.update_attributes(response_from_payment_api: response)
         if  hsh['Pushpayment']["CCAuth"] == "Approved"
           puts "Payment is successfully processed."
-          ord.update_attributes("payment_error", nil)
+          ord.update_attributes(payment_error: nil)
           Response.new(
             success_from(response),
             SUCCESS_MESSAGE,
