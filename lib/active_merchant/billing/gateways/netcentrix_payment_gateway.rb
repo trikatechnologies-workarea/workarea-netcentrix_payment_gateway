@@ -38,7 +38,6 @@ module ActiveMerchant
           "CardExpYear" => "#{paysource.year}",
           "CardCID" => "#{paysource.verification_value}"
         }
-        byebug
         order.merge!('FirstName' => billing_address.first_name, 'LastName' => billing_address.last_name,
                      'Street' => billing_address.street, 'City' => billing_address.city,
                      'State' => billing_address.region, 'Zip' =>  billing_address.postal_code,
