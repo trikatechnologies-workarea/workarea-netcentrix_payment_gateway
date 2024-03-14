@@ -38,7 +38,8 @@ module ActiveMerchant
           "CardExpYear" => "#{paysource.year}",
           "CardCID" => "#{paysource.verification_value}"
         }
-        order.merge!('FirstName' => 'Website', 'LastName' => 'Ecomtest',
+        byebug
+        order.merge!('FirstName' => billing_address.first_name, 'LastName' => billing_address.last_name,
                      'Street' => billing_address.street, 'City' => billing_address.city,
                      'State' => billing_address.region, 'Zip' =>  billing_address.postal_code,
                      'Country' => billing_address.country.alpha2)
